@@ -1,24 +1,41 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import useGet from './utils/UseGet';
+import axios from 'axios'
+import usePost from './utils/UsePost';
+
+// axios.get('https://mymoney-vparizoto.firebaseio.com/valor.json')
+//   .then(res => {
+//     console.log(res.data)
+//   })
+
+// axios
+//   .post('https://mymoney-vparizoto.firebaseio.com/valor.json', { 
+//     outro: 'Vinicius Parizoto'
+//   })
+//   .then(res => {
+//     console.log(res)
+//   })
+
+const url = 'https://mymoney-vparizoto.firebaseio.com/movement/2019-08.json'
+
+
 
 function App() {
+  
+  const data = useGet(url)
+  const [postData, post] = usePost(url)
+
+  const saveNew = () => {
+    post({ valor: 10, descricao: 'ola' })
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>My Money</h1>
+      { JSON.stringify(data) }
+      {data.loading && ( <p>Loading...</p> )}
+      <button onClick={saveNew}>Salvar</button>
+      <pre>{JSON.stringify(postData)}</pre>
     </div>
   );
 }
