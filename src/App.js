@@ -1,7 +1,10 @@
 import React from 'react';
-import useGet from './utils/UseGet';
-import axios from 'axios'
-import usePost from './utils/UsePost';
+import {
+  //useDelete,
+  //useGet,
+  //usePost,
+  Rest
+} from './utils';
 
 // axios.get('https://mymoney-vparizoto.firebaseio.com/valor.json')
 //   .then(res => {
@@ -16,26 +19,35 @@ import usePost from './utils/UsePost';
 //     console.log(res)
 //   })
 
-const url = 'https://mymoney-vparizoto.firebaseio.com/movement/2019-08.json'
 
+const baseURL = 'https://mymoney-vparizoto.firebaseio.com/';
 
+const { useGet, usePost, useDelete } = Rest(baseURL);
 
 function App() {
-  
-  const data = useGet(url)
-  const [postData, post] = usePost(url)
+
+  const data = useGet('movement/2019-08')
+  const [postData, post] = usePost('movement/2019-08')
+  const [deleteData, remove] = useDelete();
 
   const saveNew = () => {
     post({ valor: 10, descricao: 'ola' })
   }
 
+  const doRemove = () => {
+    remove('/movement/2019-08/-LsFdR5hJwjRQEX1T7O0')
+  }
+
   return (
     <div className="App">
       <h1>My Money</h1>
-      { JSON.stringify(data) }
-      {data.loading && ( <p>Loading...</p> )}
+      {JSON.stringify(data)}
+      {data.loading && (<p>Loading...</p>)}
       <button onClick={saveNew}>Salvar</button>
       <pre>{JSON.stringify(postData)}</pre>
+      <button onClick={doRemove}>Delete</button>
+      <pre>{JSON.stringify(deleteData)}</pre>
+
     </div>
   );
 }
