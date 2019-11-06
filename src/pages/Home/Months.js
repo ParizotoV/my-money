@@ -7,11 +7,9 @@ import { Link } from 'react-router-dom';
 const baseURL = 'https://mymoney-vparizoto.firebaseio.com/';
 const { useGet } = Rest(baseURL);
 
-
-
 const Months = () => {
 
-  const data = useGet('month')
+  const data = useGet('meses')
 
   if (data.loading) {
     return <span>Carregando...</span>
@@ -36,11 +34,11 @@ const Months = () => {
                 .map(mes => {
                   return (
                     <tr id={mes}>
-                      <td><Link to={`/movement/${mes}`}>{mes}</Link></td>
+                      <td><Link to={`/movimentacoes/${mes}`}>{mes}</Link></td>
                       <td>{data.data[mes].previsao_entrada}</td>
-                      <td>{data.data[mes].entrada}</td>
+                      <td>{data.data[mes].entradas}</td>
                       <td>{data.data[mes].previsao_saida}</td>
-                      <td>{data.data[mes].saida}</td>
+                      <td>{data.data[mes].saidas}</td>
                     </tr>
                   )
                 })

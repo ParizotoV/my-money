@@ -1,80 +1,100 @@
-import { useReducer, useEffect } from 'react';
-import axios from 'axios';
+import { useReducer, useEffect } from 'react'
+import axios from 'axios'
 
 const INITIAL_STATE = {
-    loading: true,
-    data: {}
+  loading: false,
+  data: {}
 }
 
 const reducer = (state, action) => {
-    console.log("State - >> ", state, " Action - >> ", action);
-    if (action.type === "REQUEST") {
-        return {
-            ...state,
-            loading: true
-        };
+  if (action.type === 'REQUEST') {
+    return {
+      ...state,
+      loading: true
     }
-    if (action.type === "SUCCESS") {
-        return {
-            ...state,
-            loading: false,
-            data: action.data
-        }
+  }
+  if (action.type === 'SUCCESS') {
+    return {
+      ...state,
+      loading: false,
+      data: action.data
     }
-    return state;
+  }
+  return state
 }
-
-const init = baseURL => {
-
-    const useGet = resource => {
-        const [data, dispatch] = useReducer(reducer, INITIAL_STATE)
-
-        useEffect(() => {
-            dispatch({ type: 'REQUEST' })
-            axios
-                .get(baseURL + resource + '.json')
-                .then(res => {
-                    dispatch({ type: "SUCCESS", data: res.data })
-                })
-        }, [resource])
-        return data;
+const init = baseUrl => {
+  const useGet = resource => {
+    const [data, dispatch] = useReducer(reducer, INITIAL_STATE)
+    const loading = async () => {
+      dispatch({ type: 'REQUEST' })
+      const res = await axios.get(baseUrl + resource + '.json')
+      dispatch({ type: 'SUCCESS', data: res.data })
     }
-
-    const usePost = resource => {
-        const [data, dispatch] = useReducer(reducer, INITIAL_STATE);
-
-        const post = data => {
-            dispatch({ type: "REQUEST" });
-            axios
-                .post(baseURL + resource + '.json', data)
-                .then(res => {
-                    dispatch({ type: "SUCCESS", data: res.data });
-                });
-        };
-        return [data, post]
-    };
-
-    const useDelete = () => {
-        const [data, dispatch] = useReducer(reducer, INITIAL_STATE);
-      
-        const remove = resource => {
-          dispatch({ type: "REQUEST" });
-          axios
-            .delete(baseURL + resource + '.json')
-            .then(() => {
-            dispatch({ 
-              type: "SUCCESS" 
-            });
-          });
-        };
-        return [data, remove]
-      };
+    useEffect(() => {
+      loading()
+    }, [resource])
 
     return {
-        useGet,
-        usePost,
-        useDelete
+      ...data,
+      refetch: loading
     }
+  }
+
+  const usePost = resource => {
+    const [data, dispatch] = useReducer(reducer, {
+      loading: false,
+      data: {}
+    })
+    const post = async (data) => {
+      dispatch({ type: 'REQUEST' })
+      const res = await axios.post(baseUrl + resource + '.json', data)
+      dispatch({
+        type: 'SUCCESS',
+        data: res.data
+      })
+    }
+    return [data, post]
+  }
+  const useDelete = () => {
+    const [data, dispatch] = useReducer(reducer, {
+      loading: false,
+      data: {}
+    })
+    const remove = async (resource) => {
+      dispatch({ type: 'REQUEST' })
+      await axios.delete(baseUrl + resource + '.json')
+      dispatch
+        ({
+          type: 'SUCCESS'
+        })
+    }
+    return [data, remove]
+  }
+
+  const usePatch = () => {
+    const [data, dispatch] = useReducer(reducer, {
+      loading: false,
+      data: {}
+    })
+    const patch = async (resource, data) => {
+      dispatch({ type: 'REQUEST' })
+      await axios
+        .patch(baseUrl + resource + '.json', data)
+      dispatch
+        ({
+          type: 'SUCCESS'
+        })
+    }
+    return [data, patch]
+  }
+
+  return {
+    useGet,
+    usePost,
+    useDelete,
+    usePatch
+  }
 }
 
-export default init;
+
+export default init
