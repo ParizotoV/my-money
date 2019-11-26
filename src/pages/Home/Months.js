@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Rest
 } from '../../utils';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 const baseURL = 'https://mymoney-vparizoto.firebaseio.com/';
 const { useGet } = Rest(baseURL);
@@ -11,8 +11,13 @@ const Months = () => {
 
   const data = useGet('meses')
 
+  console.log(data.data)
+
   if (data.loading) {
     return <span>Carregando...</span>
+  }
+  if (data.error && data.error === "Permission denied") {
+    return <Redirect to='/login'/>
   }
   if (Object.keys(data.data).length > 0) {
     return (

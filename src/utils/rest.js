@@ -32,13 +32,22 @@ const reducer = (state, action) => {
   }
   return state
 }
+
+const getAuth = () => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    return '?auth='+token
+  }
+  return ''
+}
+
 const init = baseUrl => {
   const useGet = resource => {
     const [data, dispatch] = useReducer(reducer, INITIAL_STATE)
     const loading = async () => {
       try {
         dispatch({ type: 'REQUEST' })
-        const res = await axios.get(baseUrl + resource + '.json')
+        const res = await axios.get(baseUrl + resource + '.json'+getAuth())
         if (res.data.error && Object.keys(res.data.error).length > 0) {
           dispatch({ type: 'FAILURE', error: res.data.error })
         } else {
@@ -66,7 +75,7 @@ const init = baseUrl => {
     })
     const post = async (data) => {
       dispatch({ type: 'REQUEST' })
-      const res = await axios.post(baseUrl + resource + '.json', data)
+      const res = await axios.post(baseUrl + resource + '.json'+getAuth(), data)
       dispatch({
         type: 'SUCCESS',
         data: res.data
@@ -81,7 +90,7 @@ const init = baseUrl => {
     })
     const remove = async (resource) => {
       dispatch({ type: 'REQUEST' })
-      await axios.delete(baseUrl + resource + '.json')
+      await axios.delete(baseUrl + resource + '.json'+getAuth())
       dispatch
         ({
           type: 'SUCCESS'
@@ -98,7 +107,7 @@ const init = baseUrl => {
     const patch = async (data) => {
       dispatch({ type: 'REQUEST' })
       await axios
-        .patch(baseUrl + resource + '.json', data)
+        .patch(baseUrl + resource + '.json'+getAuth(), data)
       dispatch
         ({
           type: 'SUCCESS'

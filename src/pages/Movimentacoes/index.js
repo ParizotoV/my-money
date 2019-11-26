@@ -4,19 +4,20 @@ import { useMovimentacaoApi } from '../../api'
 import InfoMes from './InfoMes'
 import AdicionarMovimentacao from './AdicionarMovimentacao'
 
-const Movement = ({ match }) => {
-  const { movimentacoes, salvarNovaMovimentacao, removerMovimentacao } = useMovimentacaoApi(match.params.data)
-
+const Movement = ({ match: { params } }) => {
+  const { movimentacoes, salvarNovaMovimentacao, removerMovimentacao } = useMovimentacaoApi(params.id)
   const salvarMovimentacao = async (dados) => {
+    console.log(dados)
     await salvarNovaMovimentacao(dados)
     movimentacoes.refetch()
     // infoMes.refetch()
   }
 
   const removerMovimentacaoClick = async (id) => {
-    await removerMovimentacao(`movimentacoes/${match.params.id}/${id}`)
-    // infoMes.refetch()
+    console.log(id)
+    await removerMovimentacao(`movimentacoes/${params.id}/${id}`)
     movimentacoes.refetch()
+    // infoMes.refetch()
   }
 
   if (movimentacoes.error === 'Permission denied') {
@@ -26,7 +27,7 @@ const Movement = ({ match }) => {
   return (
     <div className='container'>
       <h1>Movimentações</h1>
-      <InfoMes data={match.params.data} />
+      <InfoMes data={params.id} />
       <table className='table'>
         <thead>
           <tr>
